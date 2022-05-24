@@ -9,6 +9,16 @@ const GoogleMapContainer = withGoogleMap(props => (
   <GoogleMap {...props} ref={props.handleMapMounted} />
 ));
 
+const googleToReact = (coords) => ({
+  latitude: coords.lat(),
+  longitude: coords.lng(),
+});
+
+const reactToGoogle = (coords) => ({
+  lat: coords.latitude,
+  lng: coords.longitude,
+});
+
 class MapView extends Component {
   state = {
     center: null,
@@ -19,7 +29,15 @@ class MapView extends Component {
     this.props.onMapReady && this.props.onMapReady();
   };
 
-  getCamera = () => {
+  getMapBoundaries = async () => {
+    const bounds = this.map.getBounds();
+    return {
+      northEast: googleToReact(bounds.getNorthEast()),
+      southWest: googleToReact(bounds.getSouthWest()),
+    };
+  }
+
+  getCamera = async () => {
     return {
       zoom: this.map.getZoom(),
       center: this.map.getCenter(),
@@ -34,7 +52,7 @@ class MapView extends Component {
 
   animateToRegion(coordinates) {
     this.setState({
-      center: { lat: coordinates.latitude, lng: coordinates.longitude },
+      center: reactToGoogle(coordinates),
     });
   }
 
@@ -42,10 +60,7 @@ class MapView extends Component {
     const { onRegionChangeComplete } = this.props;
     if (this.map && onRegionChangeComplete) {
       const center = this.map.getCenter();
-      onRegionChangeComplete({
-        latitude: center.lat(),
-        longitude: center.lng(),
-      });
+      onRegionChangeComplete(googleToReact(center));
     }
   };
 
@@ -58,16 +73,10 @@ class MapView extends Component {
       ? { center }
       : region
       ? {
-          center: {
-            lat: region.latitude,
-            lng: region.longitude,
-          },
+          center: reactToGoogle(region),
         }
       : {
-          defaultCenter: {
-            lat: initialRegion.latitude,
-            lng: initialRegion.longitude,
-          },
+          defaultCenter: reactToGoogle(initialRegion),
         };
     const zoom =
       defaultZoom ||
