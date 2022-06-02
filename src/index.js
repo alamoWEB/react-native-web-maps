@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { withGoogleMap, GoogleMap } from 'react-google-maps';
-import Marker from './Marker';
-import Polyline from './Polyline';
-import Callout from './Callout';
 
 const GoogleMapContainer = withGoogleMap(props => (
   <GoogleMap {...props} ref={props.handleMapMounted} />
@@ -65,7 +62,7 @@ class MapView extends Component {
   };
 
   render() {
-    const { region, initialRegion, onRegionChange, onPress, options, defaultZoom } = this.props;
+    const { region, initialRegion, onRegionChange, onPress, options, defaultZoom, showsPointsOfInterest } = this.props;
     const { center } = this.state;
     const style = this.props.style || styles.container;
 
@@ -100,17 +97,14 @@ class MapView extends Component {
           onIdle={this.onDragEnd}
           defaultZoom={zoom}
           onClick={onPress}
-          options={options}>
+          options={options}
+          showsPointsOfInterest={showsPointsOfInterest}>
           {this.props.children}
         </GoogleMapContainer>
       </View>
     );
   }
 }
-
-MapView.Marker = Marker;
-MapView.Polyline = Polyline;
-MapView.Callout = Callout;
 
 const styles = StyleSheet.create({
   container: {
@@ -119,3 +113,6 @@ const styles = StyleSheet.create({
 });
 
 export default MapView;
+export { default as Marker} from './Marker';
+export { default as Polyline} from './Polyline';
+export { default as Callout} from './Callout';
