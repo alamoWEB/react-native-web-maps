@@ -83,6 +83,11 @@ class MapView extends Component {
         ? Math.round(Math.log(360 / initialRegion.latitudeDelta) / Math.LN2)
         : 15);
     googleMapProps['zoom'] = this.state.zoom ? this.state.zoom : zoom;
+
+    const childrenWithProps = React.Children.map(this.props.children, child => {
+      return React.cloneElement(child, { map: this.map });
+    });
+
     return (
       <View style={style}>
         <GoogleMapContainer
@@ -99,7 +104,7 @@ class MapView extends Component {
           onClick={onPress}
           options={options}
           showsPointsOfInterest={showsPointsOfInterest}>
-          {this.props.children}
+          {childrenWithProps}
         </GoogleMapContainer>
       </View>
     );

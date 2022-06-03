@@ -12,17 +12,26 @@ class MapViewMarker extends Component {
     this.setState({ isOpen: false });
   }
   render() {
-    const { description, title, coordinate, onPress, ...rest } = this.props;
+    const { map, description, title, coordinate, onPress, icon, ...rest } = this.props;
 
     const childrenWithProps = React.Children.map(this.props.children, child => {
       return React.cloneElement(child, { hideCallout: this.hideCallout.bind(this) });
     });
+
+    const customIcon = icon ? {
+      ...icon,
+      url: icon.uri ? icon.uri : icon.url,
+      scaledSize: icon.scaledSize ? new map.Size(icon.scaledSize.width, icon.scaledSize.height) : undefined
+    } : undefined
+
     return (
       <Marker
         {...rest}
         title={description ? `${title}\n${description}` : title}
         position={{ lat: coordinate.latitude, lng: coordinate.longitude }}
-        onClick={onPress}>
+        onClick={onPress}
+        icon={customIcon}
+      >
         {this.state.isOpen && childrenWithProps}
       </Marker>
     );
